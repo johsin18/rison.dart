@@ -1,13 +1,13 @@
 library rison;
 
 import 'dart:html';
-import 'package:js/js.dart' as js;
-import 'package:js/js_wrapping.dart' as jsw;
+import 'dart:js';
+import 'package:js_wrapping/js_wrapping.dart';
 
-String mapToRison(Map map) => js.context['rison'].encode(js.map(map));
-Map risonToMap(String rison) => jsObjectToMap(js.context['rison'].decode(rison));
-Map jsObjectToMap(js.Proxy jsObject) => jsw.JsObjectToMapAdapter.cast(jsObject);
-List jsObjectToList(js.Proxy jsObject) => jsw.JsArrayToListAdapter.cast(jsObject).toList();
+String mapToRison(Map map) => context['rison'].callMethod('encode', [ new JsObject.jsify(map) ]);
+Map risonToMap(String rison) => TypedJsMap.$wrap(context['rison'].callMethod('decode', [ rison ]));
+Map jsObjectToMap(JsObject jsObject) => TypedJsMap.$wrap(jsObject);
+List jsObjectToList(JsObject jsObject) => jsObject as JsArray;
 
 void printMap(Map map) {
   print(mapToString(map));
@@ -16,7 +16,7 @@ String mapToString(Map map) {
   String result = '';
   map.forEach((k, v) {
     String value = v.toString();
-    if (v is js.Proxy)
+    if (v is JsObject)
       value = "( ${mapToString(jsObjectToMap(v))} )";
     result = "$result, $k : $value";
   });
