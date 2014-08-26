@@ -1,0 +1,7 @@
+name: rison
+description: A pub package
+dependencies:  
+  js: any
+dev_dependencies:
+  unittest: any
+  
