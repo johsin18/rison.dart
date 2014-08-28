@@ -9,6 +9,41 @@ Map risonToMap(String rison) => TypedJsMap.$wrap(context['rison'].callMethod('de
 Map jsObjectToMap(JsObject jsObject) => TypedJsMap.$wrap(jsObject);
 List jsObjectToList(JsObject jsObject) => jsObject as JsArray;
 
+Map risonToMapRecursive(String rison) {
+  Map map = risonToMap(rison);
+
+  convertMap(map);
+
+  return map;
+}
+
+void convertMap(Map map) {
+  map.forEach((String key, Object value) {
+    if (value is JsArray) {
+      map[key] = jsObjectToList(value);
+      convertArray(map[key]);
+    }
+    else if (value is JsObject) {
+      map[key] = jsObjectToMap(value);
+      convertMap(map[key]);
+    }
+  });
+}
+
+void convertArray(List array) {
+  for (int i = 0; i < array.length; ++i) {
+    dynamic value = array[i];
+    if (value is JsArray) {
+      array[i] = jsObjectToList(value);
+      convertArray(array[i]);
+    }
+    else if (value is JsObject) {
+      array[i] = jsObjectToMap(value);
+      convertMap(array[i]);
+    }
+  }
+}
+
 void printMap(Map map) {
   print(mapToString(map));
 }
