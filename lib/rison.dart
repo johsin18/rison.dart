@@ -5,7 +5,8 @@ import 'dart:js';
 import 'package:js_wrapping/js_wrapping.dart';
 
 String mapToRison(Map map) => context['rison'].callMethod('encode', [ new JsObject.jsify(map) ]);
-Map risonToMap(String rison) => TypedJsMap.$wrap(context['rison'].callMethod('decode', [ rison ]));
+JsObject risonToJsObject(String rison) => context['rison'].callMethod('decode', [ rison ]);
+Map risonToMap(String rison) => TypedJsMap.$wrap(risonToJsObject(rison));
 Map jsObjectToMap(JsObject jsObject) => TypedJsMap.$wrap(jsObject);
 List jsObjectToList(JsObject jsObject) => jsObject as JsArray;
 
