@@ -4,45 +4,49 @@ import 'dart:html';
 import 'dart:js';
 import 'package:js_wrapping/js_wrapping.dart';
 
-String mapToRison(Map map) => context['rison'].callMethod('encode', [ new JsObject.jsify(map) ]);
+String toRison(Object mapOrIterable) => context['rison'].callMethod('encode', [ new JsObject.jsify(mapOrIterable) ]);
 JsObject risonToJsObject(String rison) => context['rison'].callMethod('decode', [ rison ]);
-Map risonToMap(String rison) => TypedJsMap.$wrap(risonToJsObject(rison));
 Map jsObjectToMap(JsObject jsObject) => TypedJsMap.$wrap(jsObject);
 List jsObjectToList(JsObject jsObject) => jsObject as JsArray;
 
-Map risonToMapRecursive(String rison) {
-  Map map = risonToMap(rison);
+Object fromRison(String rison) {
+  JsObject jsObject = risonToJsObject(rison);
 
-  convertMap(map);
+  return convertObject(jsObject, false);
+}
 
-  return map;
+Object fromRisonRecursive(String rison) {
+  JsObject jsObject = risonToJsObject(rison);
+
+  return convertObject(jsObject, true);
+}
+
+Object convertObject(Object object, bool recursive) {
+  if (object is JsArray) {
+    List list = jsObjectToList(object);
+    if (recursive)
+      convertArray(list);
+    return list;
+  }
+  else if (object is JsObject) {
+    Map map = jsObjectToMap(object);
+    if (recursive)
+      convertMap(map);
+    return map;
+  }
+  else
+    return object;
 }
 
 void convertMap(Map map) {
   map.forEach((String key, Object value) {
-    if (value is JsArray) {
-      map[key] = jsObjectToList(value);
-      convertArray(map[key]);
-    }
-    else if (value is JsObject) {
-      map[key] = jsObjectToMap(value);
-      convertMap(map[key]);
-    }
+    map[key] = convertObject(map[key], true);
   });
 }
 
 void convertArray(List array) {
-  for (int i = 0; i < array.length; ++i) {
-    dynamic value = array[i];
-    if (value is JsArray) {
-      array[i] = jsObjectToList(value);
-      convertArray(array[i]);
-    }
-    else if (value is JsObject) {
-      array[i] = jsObjectToMap(value);
-      convertMap(array[i]);
-    }
-  }
+  for (int i = 0; i < array.length; ++i)
+    array[i] = convertObject(array[i], true);
 }
 
 void printMap(Map map) {

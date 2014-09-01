@@ -5,11 +5,11 @@ main() {
   test('RISON test', () {
     Map mapIn = { 'x': 1, 'y': { 'y1': 0.123 }, 'z': [ 'a', 'b', 'c']};
 
-    String rison = mapToRison(mapIn);
+    String rison = toRison(mapIn);
 
     print(rison);
 
-    Map mapOut = risonToMap(rison);
+    Map mapOut = fromRison(rison);
 
     expect(mapOut is Map, true);
     mapOut['y'] = new Map.from(jsObjectToMap(mapOut['y']));
@@ -23,11 +23,11 @@ main() {
   test('RISON test recursive', () {
     Map mapIn = { 'a' : [ { 'b': [ { 'c': 42 } ] } ] };
 
-    String rison = mapToRison(mapIn);
+    String rison = toRison(mapIn);
 
     print(rison);
 
-    Map mapOut = risonToMapRecursive(rison);
+    Map mapOut = fromRisonRecursive(rison);
 
     print(mapIn);
     print(mapOut);
