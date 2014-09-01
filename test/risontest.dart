@@ -11,7 +11,6 @@ main() {
 
     Map mapOut = fromRison(rison);
 
-    expect(mapOut is Map, true);
     mapOut['y'] = new Map.from(jsObjectToMap(mapOut['y']));
     mapOut['z'] = jsObjectToList(mapOut['z']);
 
@@ -32,5 +31,27 @@ main() {
     print(mapIn);
     print(mapOut);
     expect(mapOut, equals(mapIn));
+  });
+
+  test('RISON string test', () {
+    String input = "string";
+    String rison = toRison(input);
+
+    print(rison);
+
+    String output = fromRison(rison);
+
+    expect(output, equals(input));
+  });
+
+  test('RISON int test', () {
+    int input = 42;
+    String rison = toRison(input);
+
+    print(rison);
+
+    int output = fromRison(rison);
+
+    expect(output, equals(input));
   });
 }

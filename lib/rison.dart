@@ -4,21 +4,21 @@ import 'dart:html';
 import 'dart:js';
 import 'package:js_wrapping/js_wrapping.dart';
 
-String toRison(Object mapOrIterable) => context['rison'].callMethod('encode', [ new JsObject.jsify(mapOrIterable) ]);
-JsObject risonToJsObject(String rison) => context['rison'].callMethod('decode', [ rison ]);
+String toRison(Object input) => context['rison'].callMethod('encode', [ (input is Map || input is Iterable) ? new JsObject.jsify(input) : input ]);
+Object risonToObject(String rison) => context['rison'].callMethod('decode', [ rison ]);
 Map jsObjectToMap(JsObject jsObject) => TypedJsMap.$wrap(jsObject);
 List jsObjectToList(JsObject jsObject) => jsObject as JsArray;
 
 Object fromRison(String rison) {
-  JsObject jsObject = risonToJsObject(rison);
+  Object object = risonToObject(rison);
 
-  return convertObject(jsObject, false);
+  return convertObject(object, false);
 }
 
 Object fromRisonRecursive(String rison) {
-  JsObject jsObject = risonToJsObject(rison);
+  Object object = risonToObject(rison);
 
-  return convertObject(jsObject, true);
+  return convertObject(object, true);
 }
 
 Object convertObject(Object object, bool recursive) {
