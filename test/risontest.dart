@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:unittest/unittest.dart';
 import 'package:rison/rison.dart';
 
@@ -53,5 +55,15 @@ main() {
     int output = fromRison(rison);
 
     expect(output, equals(input));
+  });
+
+  test('RISON encoding test', () {
+    Rison rison = new Rison();
+    var string = 'grün';
+    rison.updateHash(string, false);
+    print(window.location.hash);
+    print(Uri.encodeFull("#$string"));
+    expect(window.location.hash, Uri.encodeFull("#$string"));
+    expect(Uri.decodeFull(window.location.hash), "#$string");
   });
 }
