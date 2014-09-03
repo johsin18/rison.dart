@@ -9,6 +9,25 @@ Object risonToObject(String rison) => context['rison'].callMethod('decode', [ ri
 Map jsObjectToMap(JsObject jsObject) => TypedJsMap.$wrap(jsObject);
 List jsObjectToList(JsObject jsObject) => jsObject as JsArray;
 
+String preencode(String text) {
+  byteToHex(int byte, StringBuffer buffer) {
+    const String hex = '0123456789ABCDEF';
+    buffer.writeCharCode(hex.codeUnitAt(byte >> 4));
+    buffer.writeCharCode(hex.codeUnitAt(byte & 0x0f));
+  }
+  StringBuffer result = new StringBuffer();
+  for (int i = 0; i < text.length; i++) {
+    var codeUnit = text.codeUnitAt(i);
+    if (codeUnit > 127) {
+      result.write('%');
+      byteToHex(codeUnit, result);
+    } else {
+      result.writeCharCode(codeUnit);
+    }
+  }
+  return result.toString();
+}
+
 Object fromRison(String rison) {
   Object object = risonToObject(rison);
 
@@ -78,6 +97,7 @@ class Rison implements StateKeeper {
 
   String get hashWithoutTag {
     String hash = (window.location.hash.length > 1) ? window.location.hash.substring(1) /* remove # */ : '';
+    hash = preencode(hash);
     String decodedHash = Uri.decodeFull(hash);
     return decodedHash;
   }
