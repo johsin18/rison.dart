@@ -93,16 +93,25 @@ class RisonStateKeeper implements StateKeeper {
   }
 
   void listenToHash(void onHashChanged(String hash)) {
-    onHashChanged(hashWithoutTag);
+    onHashChanged(decodeHash(hashWithoutTag));
     window.onHashChange.listen((HashChangeEvent e) {
-      onHashChanged(hashWithoutTag);
+      onHashChanged(decodeHash(hashWithoutTag));
     });
   }
 
   static String get hashWithoutTag {
-    String hash = (window.location.hash.length > 1) ? window.location.hash.substring(1) /* remove # */ : '';
-    hash = preencode(hash);
-    String decodedHash = Uri.decodeFull(hash);
+    return (window.location.hash.length > 1) ? window.location.hash.substring(1) /* remove # */ : '';
+  }
+
+  static String decodeHash(String hash) {
+    String decodedHash;
+    try {
+      decodedHash = Uri.decodeFull(hash);
+    }
+    on ArgumentError catch (e) {
+      hash = preencode(hash);
+      decodedHash = Uri.decodeFull(hash);
+    }
     return decodedHash;
   }
 

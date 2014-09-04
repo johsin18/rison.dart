@@ -63,7 +63,7 @@ main() {
     print("hash: ${window.location.hash}");
     String hashWithoutTag = RisonStateKeeper.hashWithoutTag;
     print("hashWithoutTag: $hashWithoutTag");
-    Object mapOut = RisonStateKeeper.fromRison(hashWithoutTag);
+    Object mapOut = RisonStateKeeper.fromRison(RisonStateKeeper.decodeHash(hashWithoutTag));
     print(mapOut);
     expect(mapOut, equals({ 'k': 'grünß' }));
   });
