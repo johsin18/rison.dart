@@ -1,5 +1,4 @@
 import 'dart:html';
-import 'dart:convert';
 
 import 'package:unittest/unittest.dart';
 import 'package:rison/rison.dart';
@@ -8,14 +7,14 @@ main() {
   test('RISON test', () {
     Map mapIn = { 'x': "string", 'y': { 'y1': 0.123 }, 'z': [ 'a', 'b', 'c']};
 
-    String rison = toRison(mapIn);
+    String rison = RisonStateKeeper.toRison(mapIn);
 
     print(rison);
 
-    Map mapOut = fromRison(rison);
+    Map mapOut = RisonStateKeeper.fromRison(rison);
 
-    mapOut['y'] = new Map.from(jsObjectToMap(mapOut['y']));
-    mapOut['z'] = jsObjectToList(mapOut['z']);
+    mapOut['y'] = new Map.from(RisonStateKeeper.jsObjectToMap(mapOut['y']));
+    mapOut['z'] = RisonStateKeeper.jsObjectToList(mapOut['z']);
 
     print(mapIn);
     print(mapOut);
@@ -25,11 +24,11 @@ main() {
   test('RISON test recursive', () {
     Map mapIn = { 'a' : [ { 'b': [ { 'c': 42 } ] } ] };
 
-    String rison = toRison(mapIn);
+    String rison = RisonStateKeeper.toRison(mapIn);
 
     print(rison);
 
-    Map mapOut = fromRisonRecursive(rison);
+    Map mapOut = RisonStateKeeper.fromRisonRecursive(rison);
 
     print(mapIn);
     print(mapOut);
@@ -38,70 +37,36 @@ main() {
 
   test('RISON string test', () {
     String input = "string";
-    String rison = toRison(input);
+    String rison = RisonStateKeeper.toRison(input);
 
     print(rison);
 
-    String output = fromRison(rison);
+    String output = RisonStateKeeper.fromRison(rison);
 
     expect(output, equals(input));
   });
 
   test('RISON int test', () {
     int input = 42;
-    String rison = toRison(input);
+    String rison = RisonStateKeeper.toRison(input);
 
     print(rison);
 
-    int output = fromRison(rison);
+    int output = RisonStateKeeper.fromRison(rison);
 
     expect(output, equals(input));
   });
 
   test('RISON encoding test', () {
-    Rison rison = new Rison();
     String string = '(k:grün%C3%9F)';
     setHash(string);
     print("hash: ${window.location.hash}");
-    String hashWithoutTag = rison.hashWithoutTag;
+    String hashWithoutTag = RisonStateKeeper.hashWithoutTag;
     print("hashWithoutTag: $hashWithoutTag");
-    Object mapOut = fromRison(hashWithoutTag);
+    Object mapOut = RisonStateKeeper.fromRison(hashWithoutTag);
     print(mapOut);
     expect(mapOut, equals({ 'k': 'grünß' }));
   });
-  
-  test('RISON encoding test faulty', () {
-    Rison rison = new Rison();
-    String string = 'grün,%C3%9F';
-    for (int i = 0; i < string.length; i ++) {
-      int codeUnit = string.codeUnitAt(i);
-      print(codeUnit);
-    }
-    string = preencode(string);
-    print(string);
-    expect(Uri.decodeFull(string), 'grün,ß');
-  });
-}
-
-String preencode(String text) {
-  byteToHex(int byte, StringBuffer buffer) {
-    const String hex = '0123456789ABCDEF';
-    buffer.write('%');
-    buffer.writeCharCode(hex.codeUnitAt(byte >> 4));
-    buffer.writeCharCode(hex.codeUnitAt(byte & 0x0f));
-  }
-  StringBuffer result = new StringBuffer();
-  for (int i = 0; i < text.length; i++) {
-    var codeUnit = text.codeUnitAt(i);
-    if (codeUnit > 127) {
-      var utf16Encoded = new String.fromCharCode(codeUnit);
-      List<int> utf8Encoded = UTF8.encode(utf16Encoded);
-      utf8Encoded.forEach((int c) { byteToHex(c, result); });
-    } else {
-      result.writeCharCode(codeUnit);
-    }
-  }
-  return result.toString();
 }
 
 void setHash(String hash) {
