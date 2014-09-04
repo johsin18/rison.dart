@@ -6,7 +6,7 @@ import 'package:rison/rison.dart';
 
 main() {
   test('RISON test', () {
-    Map mapIn = { 'x': 1, 'y': { 'y1': 0.123 }, 'z': [ 'a', 'b', 'c']};
+    Map mapIn = { 'x': "string", 'y': { 'y1': 0.123 }, 'z': [ 'a', 'b', 'c']};
 
     String rison = toRison(mapIn);
 
@@ -58,17 +58,21 @@ main() {
     expect(output, equals(input));
   });
 
-  test('RISON encoding test', () {
+  solo_test('RISON encoding test', () {
     Rison rison = new Rison();
-    String string = 'grün';
-    rison.updateHash(string, false);
-    print(window.location.hash);
-    print(Uri.encodeFull("#$string"));
-    expect(window.location.hash, Uri.encodeFull("#$string"));
-    expect(Uri.decodeFull(window.location.hash), "#$string");
+    String string = '(k:grün%C3%9F)';
+    setHash(string);
+    print("hash: ${window.location.hash}");
+    String hashWithoutTag = rison.hashWithoutTag;
+    print("hashWithoutTag: $hashWithoutTag");
+    Object object = fromRison(hashWithoutTag);
+    print(object);
+//    print(Uri.encodeFull("#$string"));
+//    expect(window.location.hash, Uri.encodeFull("#$string"));
+//    expect(Uri.decodeFull(window.location.hash), "#$string");
   });
   
-  solo_test('RISON encoding test faulty', () {
+  test('RISON encoding test faulty', () {
     Rison rison = new Rison();
     String string = 'grün,%C3%9F';
     for (int i = 0; i < string.length; i ++) {
@@ -101,3 +105,14 @@ String preencode(String text) {
   }
   return result.toString();
 }
+
+void setHash(String hash) {
+  String url = window.location.href;
+  int hashBegin = url.indexOf("#", 0);
+  if (hashBegin == -1)
+    hashBegin = url.length;
+  String baseUrl = url.substring(0, hashBegin);
+  String actualUrl = "${baseUrl}#${hash}";
+  window.history.replaceState(null, '', actualUrl);
+}
+
