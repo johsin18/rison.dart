@@ -2,6 +2,8 @@ library rison;
 
 import 'dart:html';
 import 'dart:js';
+import 'dart:convert';
+
 import 'package:js_wrapping/js_wrapping.dart';
 
 String toRison(Object input) => context['rison'].callMethod('encode', [ (input is Map || input is Iterable) ? new JsObject.jsify(input) : input ]);
@@ -12,15 +14,17 @@ List jsObjectToList(JsObject jsObject) => jsObject as JsArray;
 String preencode(String text) {
   byteToHex(int byte, StringBuffer buffer) {
     const String hex = '0123456789ABCDEF';
+    buffer.write('%');
     buffer.writeCharCode(hex.codeUnitAt(byte >> 4));
     buffer.writeCharCode(hex.codeUnitAt(byte & 0x0f));
   }
   StringBuffer result = new StringBuffer();
   for (int i = 0; i < text.length; i++) {
-    var codeUnit = text.codeUnitAt(i);
+    int codeUnit = text.codeUnitAt(i);
     if (codeUnit > 127) {
-      result.write('%');
-      byteToHex(codeUnit, result);
+      String utf16Encoded = new String.fromCharCode(codeUnit);
+      List<int> utf8Encoded = UTF8.encode(utf16Encoded);
+      utf8Encoded.forEach((int c) { byteToHex(c, result); });
     } else {
       result.writeCharCode(codeUnit);
     }
