@@ -92,15 +92,23 @@ class RisonStateKeeper implements StateKeeper {
     return result;
   }
 
-  void listenToHash(void onHashChanged(String hash)) {
-    notifyAboutChangedHash(onHashChanged);
+  void listenToHash(void onHashChanged(String hash), [ void onHashChangedToFaulty(String hash) ]) {
+    notifyAboutChangedHash(onHashChanged, onHashChangedToFaulty);
     window.onHashChange.listen((HashChangeEvent e) {
-      notifyAboutChangedHash(onHashChanged);
+      notifyAboutChangedHash(onHashChanged, onHashChangedToFaulty);
     });
   }
 
-  void notifyAboutChangedHash(onHashChanged) {
-    onHashChanged(decodeHash(hashWithoutTag));
+  void notifyAboutChangedHash(onHashChanged, onHashChangedToFaulty) {
+    String decodedHash;
+    try {
+      decodedHash = decodeHash(hashWithoutTag);
+    }
+    on ArgumentError catch (e) {
+      onHashChangedToFaulty(hashWithoutTag);
+      return;
+    }
+    onHashChanged(decodedHash);
   }
 
   static String get hashWithoutTag {
