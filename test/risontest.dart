@@ -58,18 +58,16 @@ main() {
     expect(output, equals(input));
   });
 
-  solo_test('RISON encoding test', () {
+  test('RISON encoding test', () {
     Rison rison = new Rison();
     String string = '(k:grün%C3%9F)';
     setHash(string);
     print("hash: ${window.location.hash}");
     String hashWithoutTag = rison.hashWithoutTag;
     print("hashWithoutTag: $hashWithoutTag");
-    Object object = fromRison(hashWithoutTag);
-    print(object);
-//    print(Uri.encodeFull("#$string"));
-//    expect(window.location.hash, Uri.encodeFull("#$string"));
-//    expect(Uri.decodeFull(window.location.hash), "#$string");
+    Object mapOut = fromRison(hashWithoutTag);
+    print(mapOut);
+    expect(mapOut, equals({ 'k': 'grünß' }));
   });
   
   test('RISON encoding test faulty', () {
