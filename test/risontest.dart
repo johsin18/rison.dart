@@ -28,7 +28,7 @@ main() {
 
     print(rison);
 
-    Map mapOut = RisonStateKeeper.fromRisonRecursive(rison);
+    Map mapOut = RisonStateKeeper.fromRison(rison, recursive: true);
 
     print(mapIn);
     print(mapOut);
@@ -66,6 +66,13 @@ main() {
     Object mapOut = RisonStateKeeper.fromRison(RisonStateKeeper.decodeHash(hashWithoutTag));
     print(mapOut);
     expect(mapOut, equals({ 'k': 'grünß' }));
+  });
+
+  solo_test('RISON invalid test', () {
+    expect(() {
+      String string = '(k:x';
+      Object mapOut = RisonStateKeeper.fromRison(string);
+    }, throwsA(new isInstanceOf<DecodingException>()));
   });
 }
 

@@ -11,6 +11,12 @@ abstract class StateKeeper {
   void updateHash(String hash, bool replace);
 }
 
+class DecodingException implements Exception {
+  String _message;
+  DecodingException(this._message) { }
+  String toString() => "RISON DecodingException: $_message";
+}
+
 class RisonStateKeeper implements StateKeeper {
   static String toRison(Object input) => context['rison'].callMethod('encode', [ (input is Map || input is Iterable) ? new JsObject.jsify(input) : input ]);
   static Object risonToObject(String rison) => context['rison'].callMethod('decode', [ rison ]);
@@ -38,18 +44,16 @@ class RisonStateKeeper implements StateKeeper {
     return result.toString();
   }
   
-  static Object fromRison(String rison) {
-    Object object = risonToObject(rison);
-  
-    return convertObject(object, false);
+  static Object fromRison(String rison, { bool recursive: false }) {
+    try {
+      Object object = risonToObject(rison);
+      return convertObject(object, recursive);
+    }
+    on String catch(stringifiedJsException) {
+      throw new DecodingException(stringifiedJsException);
+    }
   }
-  
-  static Object fromRisonRecursive(String rison) {
-    Object object = risonToObject(rison);
-  
-    return convertObject(object, true);
-  }
-  
+
   static Object convertObject(Object object, bool recursive) {
     if (object is JsArray) {
       List list = jsObjectToList(object);
