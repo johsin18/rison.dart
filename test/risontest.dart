@@ -68,7 +68,7 @@ main() {
     expect(mapOut, equals({ 'k': 'grünß' }));
   });
 
-  solo_test('RISON invalid test', () {
+  test('RISON invalid test', () {
     expect(() {
       String string = '(k:x';
       Object mapOut = RisonStateKeeper.fromRison(string);
