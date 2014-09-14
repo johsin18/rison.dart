@@ -99,7 +99,7 @@ class RisonStateKeeper implements StateKeeper {
     });
   }
 
-  void notifyAboutChangedHash(onHashChanged, onHashChangedToFaulty) {
+  void notifyAboutChangedHash(void onHashChanged(String hash), void onHashChangedToFaulty(String hash)) {
     String decodedHash;
     try {
       decodedHash = decodeHash(hashWithoutTag);
