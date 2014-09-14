@@ -18,8 +18,8 @@ class DecodingException implements Exception {
   bool operator==(final DecodingException other) => other is DecodingException && _message == other._message;
 }
 
-typedef void HashChangedCallback(String hash);
-typedef void HashChangedToFaultyCallback(String hash);
+typedef void HashChangedCallback(Object state);
+typedef void HashChangedToFaultyCallback(String hash, bool restoredPrevious);
 
 class RisonStateKeeper implements StateKeeper {
   static String toRison(Object input) => context['rison'].callMethod('encode', [ (input is Map || input is Iterable) ? new JsObject.jsify(input) : input ]);
@@ -100,6 +100,8 @@ class RisonStateKeeper implements StateKeeper {
     return result;
   }
 
+  String _lastKnownValidHash;
+
   void listenToHash(HashChangedCallback onHashChanged, [ HashChangedToFaultyCallback onHashChangedToFaulty ]) {
     notifyAboutChangedHash(onHashChanged, onHashChangedToFaulty);
     window.onHashChange.listen((HashChangeEvent e) {
@@ -109,14 +111,21 @@ class RisonStateKeeper implements StateKeeper {
 
   void notifyAboutChangedHash(HashChangedCallback onHashChanged, HashChangedToFaultyCallback onHashChangedToFaulty) {
     String decodedHash;
+    var hash = hashWithoutTag;
     try {
-      decodedHash = decodeHash(hashWithoutTag);
+      decodedHash = decodeHash(hash);
+      Object state = fromRison(decodedHash, recursive: true);
+      _lastKnownValidHash = decodedHash;
+      onHashChanged(state);
     }
-    on ArgumentError catch (e) {
-      onHashChangedToFaulty(hashWithoutTag);
-      return;
+    on Object catch (e) {
+      if (_lastKnownValidHash != null) {
+        updateHash(_lastKnownValidHash, true);
+        onHashChangedToFaulty(hash, true);
+      }
+      else
+        onHashChangedToFaulty(hash, false);
     }
-    onHashChanged(decodedHash);
   }
 
   static String get hashWithoutTag {
