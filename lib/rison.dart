@@ -15,6 +15,7 @@ class DecodingException implements Exception {
   String _message;
   DecodingException(this._message) { }
   String toString() => "RISON DecodingException: $_message";
+  bool operator==(final DecodingException other) => other is DecodingException && _message == other._message;
 }
 
 class RisonStateKeeper implements StateKeeper {

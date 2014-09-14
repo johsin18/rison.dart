@@ -72,7 +72,7 @@ main() {
     expect(() {
       String string = '(k:x';
       Object mapOut = RisonStateKeeper.fromRison(string);
-    }, throwsA(new isInstanceOf<DecodingException>()));
+    }, throwsA(new DecodingException('Error: rison decoder error: missing \':\'')));
   });
 }
 
