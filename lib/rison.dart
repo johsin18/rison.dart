@@ -18,6 +18,9 @@ class DecodingException implements Exception {
   bool operator==(final DecodingException other) => other is DecodingException && _message == other._message;
 }
 
+typedef void HashChangedCallback(String hash);
+typedef void HashChangedToFaultyCallback(String hash);
+
 class RisonStateKeeper implements StateKeeper {
   static String toRison(Object input) => context['rison'].callMethod('encode', [ (input is Map || input is Iterable) ? new JsObject.jsify(input) : input ]);
   static Object risonToObject(String rison) => context['rison'].callMethod('decode', [ rison ]);
@@ -97,14 +100,14 @@ class RisonStateKeeper implements StateKeeper {
     return result;
   }
 
-  void listenToHash(void onHashChanged(String hash), [ void onHashChangedToFaulty(String hash) ]) {
+  void listenToHash(HashChangedCallback onHashChanged, [ HashChangedToFaultyCallback onHashChangedToFaulty ]) {
     notifyAboutChangedHash(onHashChanged, onHashChangedToFaulty);
     window.onHashChange.listen((HashChangeEvent e) {
       notifyAboutChangedHash(onHashChanged, onHashChangedToFaulty);
     });
   }
 
-  void notifyAboutChangedHash(void onHashChanged(String hash), void onHashChangedToFaulty(String hash)) {
+  void notifyAboutChangedHash(HashChangedCallback onHashChanged, HashChangedToFaultyCallback onHashChangedToFaulty) {
     String decodedHash;
     try {
       decodedHash = decodeHash(hashWithoutTag);
