@@ -123,9 +123,10 @@ class RisonStateKeeper implements StateKeeper {
     on Object catch (e) {
       if (_lastKnownValidHash != null) {
         updateHash(_lastKnownValidHash, true);
-        onHashChangedToFaulty(hash, true);
+        if (onHashChangedToFaulty != null)
+          onHashChangedToFaulty(hash, true);
       }
-      else
+      else if (onHashChangedToFaulty != null)
         onHashChangedToFaulty(hash, false);
     }
   }
