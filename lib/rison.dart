@@ -49,6 +49,8 @@ class RisonStateKeeper implements StateKeeper {
   }
   
   static Object fromRison(String rison, { bool recursive: false }) {
+    if (rison == '')
+      return null;
     try {
       Object object = risonToObject(rison);
       return convertObject(object, recursive);
