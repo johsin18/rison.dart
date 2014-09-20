@@ -159,6 +159,11 @@ class RisonStateKeeper implements StateKeeper {
     else
       window.history.pushState(null, '', actualUrl);
   }
+
+  void updateState(Object state, bool replace) {
+    String rison = RisonStateKeeper.toRison(state);
+    updateHash(rison, replace);
+  }
 }
 
 class DummyStateKeeper implements StateKeeper {
