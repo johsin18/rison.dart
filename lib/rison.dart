@@ -118,6 +118,8 @@ class RisonStateKeeper implements StateKeeper {
       decodedHash = decodeHash(hash);
       Object state = fromRison(decodedHash, recursive: true);
       _lastKnownValidHash = decodedHash;
+      if (encodeHash(decodedHash) != hash)
+        updateHash(hash, true);
       onHashChanged(state);
     }
     on Object catch (e) {
@@ -148,7 +150,7 @@ class RisonStateKeeper implements StateKeeper {
   }
 
   void updateHash(String hash, bool replace) {
-    hash = Uri.encodeFull(hash);
+    hash = encodeHash(hash);
     String url = window.location.href;
     int hashBegin = url.indexOf("#", 0);
     if (hashBegin == -1)
@@ -161,6 +163,8 @@ class RisonStateKeeper implements StateKeeper {
       window.history.pushState(null, '', actualUrl);
     _lastKnownValidHash = hash;
   }
+
+  String encodeHash(String hash) => Uri.encodeFull(hash);
 
   void updateState(Object state, bool replace) {
     String rison = RisonStateKeeper.toRison(state);
