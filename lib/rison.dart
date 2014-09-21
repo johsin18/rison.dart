@@ -159,6 +159,7 @@ class RisonStateKeeper implements StateKeeper {
       window.history.replaceState(null, '', actualUrl);
     else
       window.history.pushState(null, '', actualUrl);
+    _lastKnownValidHash = hash;
   }
 
   void updateState(Object state, bool replace) {
