@@ -168,7 +168,8 @@ class RisonStateKeeper implements StateKeeper {
 
   void updateState(Object state, bool replace) {
     String rison = toRison(state);
-    setHash(rison, replace);
+    if (rison != _lastKnownValidHash)
+      setHash(rison, replace);
   }
 }
 
