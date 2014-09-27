@@ -8,7 +8,7 @@ import 'package:js_wrapping/js_wrapping.dart';
 
 abstract class StateKeeper {
   void listenToHash(void onHashChanged(String hash));
-  void updateHash(String hash, bool replace);
+  void setHash(String hash, bool replace);
 }
 
 class DecodingException implements Exception {
@@ -113,18 +113,18 @@ class RisonStateKeeper implements StateKeeper {
 
   void notifyAboutChangedHash(HashChangedCallback onHashChanged, HashChangedToFaultyCallback onHashChangedToFaulty) {
     String decodedHash;
-    var hash = hashWithoutTag;
+    String hash = hashWithoutTag;
     try {
       decodedHash = decodeHash(hash);
       Object state = fromRison(decodedHash, recursive: true);
       _lastKnownValidHash = decodedHash;
       if (encodeHash(decodedHash) != hash)
-        updateHash(hash, true);
+        setHash(hash, true);
       onHashChanged(state);
     }
     on Object catch (e) {
       if (_lastKnownValidHash != null) {
-        updateHash(_lastKnownValidHash, true);
+        setHash(_lastKnownValidHash, true);
         if (onHashChangedToFaulty != null)
           onHashChangedToFaulty(hash, true);
       }
@@ -149,7 +149,7 @@ class RisonStateKeeper implements StateKeeper {
     return decodedHash;
   }
 
-  void updateHash(String hash, bool replace) {
+  void setHash(String hash, bool replace) {
     hash = encodeHash(hash);
     String url = window.location.href;
     int hashBegin = url.indexOf("#", 0);
@@ -167,12 +167,12 @@ class RisonStateKeeper implements StateKeeper {
   String encodeHash(String hash) => Uri.encodeFull(hash);
 
   void updateState(Object state, bool replace) {
-    String rison = RisonStateKeeper.toRison(state);
-    updateHash(rison, replace);
+    String rison = toRison(state);
+    setHash(rison, replace);
   }
 }
 
 class DummyStateKeeper implements StateKeeper {
   void listenToHash(void onHashChanged(String hash)) { }
-  void updateHash(String hash, bool replace) { }
+  void setHash(String hash, bool replace) { }
 }
