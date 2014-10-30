@@ -114,13 +114,13 @@ class RisonStateKeeper implements StateKeeper {
   void notifyAboutChangedHash(HashChangedCallback onHashChanged, HashChangedToFaultyCallback onHashChangedToFaulty) {
     String decodedHash;
     String hash = hashWithoutTag;
+    Object state;
     try {
       decodedHash = decodeHash(hash);
-      Object state = fromRison(decodedHash, recursive: true);
+      state = fromRison(decodedHash, recursive: true);
       _lastKnownValidHash = decodedHash;
       if (encodeHash(decodedHash) != hash)
         setHash(hash, true);
-      onHashChanged(state);
     }
     on Object catch (e) {
       if (_lastKnownValidHash != null) {
@@ -128,7 +128,10 @@ class RisonStateKeeper implements StateKeeper {
       }
       if (onHashChangedToFaulty != null)
         onHashChangedToFaulty(hash, _lastKnownValidHash != null);
+      return;
     }
+
+    onHashChanged(state);
   }
 
   static String get hashWithoutTag {
