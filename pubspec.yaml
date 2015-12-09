@@ -3,5 +3,4 @@ description: A pub package
 dependencies:  
   js_wrapping: any
 dev_dependencies:
-  unittest: any
-  
+  test: any

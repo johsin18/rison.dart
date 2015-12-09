@@ -1,6 +1,6 @@
 import 'dart:html';
 
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 import 'package:rison/rison.dart';
 
 main() {
