@@ -24,7 +24,7 @@ typedef void HashChangedToFaultyCallback(String hash, bool restoredPrevious);
 class RisonStateKeeper implements StateKeeper {
   static String toRison(Object input) => context['rison'].callMethod('encode', [ (input is Map || input is Iterable) ? new JsObject.jsify(input) : input ]);
   static Object risonToObject(String rison) => context['rison'].callMethod('decode', [ rison ]);
-  static Map jsObjectToMap(JsObject jsObject) => TypedJsMap.$wrap(jsObject);
+  static Map jsObjectToMap(JsObject jsObject) => new JsObjectAsMap.created(jsObject, new IdentityCodec());
   static List jsObjectToList(JsObject jsObject) => jsObject as JsArray;
   
   static String preencode(String text) {
