@@ -71,7 +71,7 @@ main() {
   test('RISON invalid test', () {
     expect(() {
       String string = '(k:x';
-      Object mapOut = RisonStateKeeper.fromRison(string);
+      RisonStateKeeper.fromRison(string);
     }, throwsA(new DecodingException('Error: rison decoder error: missing \':\'')));
   });
 }
