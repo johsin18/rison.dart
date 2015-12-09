@@ -122,7 +122,7 @@ class RisonStateKeeper implements StateKeeper {
       if (encodeHash(decodedHash) != hash)
         setHash(hash, true);
     }
-    on Object catch (e) {
+    on Object {
       if (_lastKnownValidHash != null) {
         setHash(_lastKnownValidHash, true);
       }
@@ -143,7 +143,7 @@ class RisonStateKeeper implements StateKeeper {
     try {
       decodedHash = Uri.decodeFull(hash);
     }
-    on ArgumentError catch (e) {
+    on ArgumentError {
       hash = preencode(hash);
       decodedHash = Uri.decodeFull(hash);
     }
