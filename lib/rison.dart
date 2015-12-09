@@ -55,8 +55,8 @@ class RisonStateKeeper implements StateKeeper {
       Object object = risonToObject(rison);
       return convertObject(object, recursive);
     }
-    on String catch(stringifiedJsException) {
-      throw new DecodingException(stringifiedJsException);
+    on DomException catch(jsException) {
+      throw new DecodingException(jsException.toString());
     }
   }
 
