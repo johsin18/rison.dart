@@ -1,6 +1,7 @@
 name: rison
 description: A package for encoding data into JSON-like strings that are URL-friendly
-dependencies:  
+dependencies:
+  browser: any
   js_wrapping: any
 dev_dependencies:
   test: any
