@@ -16,6 +16,7 @@ class DecodingException implements Exception {
   DecodingException(this._message) { }
   String toString() => "RISON DecodingException: $_message";
   bool operator==(final DecodingException other) => other is DecodingException && _message == other._message;
+  int get hashCode => _message.hashCode;
 }
 
 typedef void HashChangedCallback(Object state);
